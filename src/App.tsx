@@ -10,15 +10,12 @@ import { Sidebar } from './components/Sidebar';
 // Pages
 import { ExecutiveSummaryPage } from './components/pages/ExecutiveSummaryPage';
 import { PLRealVsBPPage } from './components/pages/PLRealVsBPPage';
-import { PLUSVsInternationalPage } from './components/pages/PLUSVsInternationalPage';
 import { OPEXRealVsBPPage } from './components/pages/OPEXRealVsBPPage';
 import { OPEXTrendsPage } from './components/pages/OPEXTrendsPage';
 import { OPEXTopSuppliersPage } from './components/pages/OPEXTopSuppliersPage';
 import { BalanceSheetPage } from './components/pages/BalanceSheetPage';
 import { GM2AnalysisSummaryPage } from './components/pages/GM2AnalysisSummaryPage';
 import { GM2HeatmapPage } from './components/pages/GM2HeatmapPage';
-import { Q4DiscountsPage } from './components/pages/Q4DiscountsPage';
-import { ProfitabilityDriversPage } from './components/pages/ProfitabilityDriversPage';
 import { CashFlowPage } from './components/pages/CashFlowPage';
 
 export default function App() {
@@ -109,8 +106,6 @@ export default function App() {
         return 'Resumen Ejecutivo';
       case 'pl-real-vs-bp':
         return 'P&L - Real vs BP vs SC';
-      case 'pl-us-vs-international':
-        return 'P&L - Apertura US vs Internacional';
       case 'opex-real-vs-bp':
         return 'OPEX - Real vs BP';
       case 'opex-trends':
@@ -123,10 +118,6 @@ export default function App() {
         return 'Rentabilidad - Resumen Análisis';
       case 'gm2-heatmap':
         return 'Rentabilidad - Heatmap GM2% por Canal';
-      case 'q4-discounts':
-        return 'Rentabilidad - Descuentos Q4';
-      case 'profitability-drivers':
-        return 'Rentabilidad - Drivers Rentabilidad';
       case 'cash-flow':
         return 'Cash Flow - Posición y Proyección';
     }
@@ -161,17 +152,12 @@ export default function App() {
           {activePage === 'pl-real-vs-bp' && (
             <PLRealVsBPPage sheetData={sheetData} onRefreshSheet={fetchSheetData} />
           )}
-          {activePage === 'pl-us-vs-international' && (
-            <PLUSVsInternationalPage onNavigateConsolidated={() => setActivePage('pl-real-vs-bp')} />
-          )}
           {activePage === 'opex-real-vs-bp' && <OPEXRealVsBPPage />}
           {activePage === 'opex-trends' && <OPEXTrendsPage />}
           {activePage === 'opex-suppliers' && <OPEXTopSuppliersPage />}
           {activePage === 'balance-sheet' && <BalanceSheetPage />}
           {activePage === 'gm2-summary' && <GM2AnalysisSummaryPage />}
           {activePage === 'gm2-heatmap' && <GM2HeatmapPage />}
-          {activePage === 'q4-discounts' && <Q4DiscountsPage />}
-          {activePage === 'profitability-drivers' && <ProfitabilityDriversPage />}
           {activePage === 'cash-flow' && <CashFlowPage />}
         </main>
       </div>

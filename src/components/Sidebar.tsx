@@ -10,12 +10,9 @@ import {
   BarChart3,
   Wallet,
   FileText,
-  Globe,
   ChevronLeft,
   ChevronRight,
   Database,
-  BadgePercent,
-  SlidersHorizontal,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -119,14 +116,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <FileText className="w-4 h-4 flex-shrink-0" />
               {isOpen && <span>Real vs BP vs SC</span>}
             </button>
-            <button
-              onClick={() => onSelectPage('pl-us-vs-international')}
-              className={navItemClass('pl-us-vs-international')}
-              title="Apertura US vs Internacional"
-            >
-              <Globe className="w-4 h-4 flex-shrink-0" />
-              {isOpen && <span>US vs Internacional</span>}
-            </button>
           </div>
         </div>
 
@@ -153,22 +142,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
             >
               <Grid className="w-4 h-4 flex-shrink-0" />
               {isOpen && <span>Heatmap GM2% por Canal</span>}
-            </button>
-            <button
-              onClick={() => onSelectPage('q4-discounts')}
-              className={navItemClass('q4-discounts')}
-              title="Descuentos Q4"
-            >
-              <BadgePercent className="w-4 h-4 flex-shrink-0" />
-              {isOpen && <span>Descuentos Q4</span>}
-            </button>
-            <button
-              onClick={() => onSelectPage('profitability-drivers')}
-              className={navItemClass('profitability-drivers')}
-              title="Drivers Rentabilidad"
-            >
-              <SlidersHorizontal className="w-4 h-4 flex-shrink-0" />
-              {isOpen && <span>Drivers Rentabilidad</span>}
             </button>
           </div>
         </div>

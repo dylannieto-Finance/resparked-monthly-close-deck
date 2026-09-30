@@ -21,29 +21,29 @@ interface WaterfallStep {
 export const PLWaterfallChart: React.FC<PLWaterfallChartProps> = ({ rows }) => {
   const [hoveredStep, setHoveredStep] = useState<WaterfallStep | null>(null);
 
-  // Extract key values from rows if available, otherwise fallback to exact official figures
+  // Extract key values from rows if available, otherwise fallback to exact July 2026 validated figures
   const getVal = (id: string, fallback: number) => {
     if (!rows) return fallback;
     const found = rows.find((r) => r.id === id);
     return found ? found.real : fallback;
   };
 
-  const netRevenue = Math.abs(getVal('net-revenue', 576789));
-  const cogsVal = Math.abs(getVal('cogs', 54928));
-  const gm1 = getVal('gm1', 521861);
-  const lastMileVal = Math.abs(getVal('last-mile', 70606));
-  const platformFeesVal = Math.abs(getVal('platform-fees', 37622));
-  const gm2 = getVal('gm2', 413633);
-  const advertisingVal = Math.abs(getVal('advertising', 460607));
-  const gm3 = getVal('gm3', -46974);
-  const opexVal = Math.abs(getVal('opex', 283874));
-  const ebitda = getVal('ebitda', -330847);
-  const otherIncomeVal = Math.abs(getVal('other-income', 19397));
-  const otherExpensesVal = Math.abs(getVal('other-expenses', 1807));
-  const otherNet = otherIncomeVal - otherExpensesVal; // +17590
-  const netIncome = getVal('net-income', -313258);
+  const netRevenue = getVal('net-revenue', 446660);
+  const cogs = getVal('cogs', -44367);
+  const gm1 = getVal('gm1', 402293);
+  const lastMile = getVal('last-mile', -125682);
+  const platformFees = getVal('platform-fees', -32161);
+  const gm2 = getVal('gm2', 244449);
+  const advertising = getVal('advertising', -356525);
+  const gm3 = getVal('gm3', -112076);
+  const opex = getVal('opex', -308040);
+  const ebitda = getVal('ebitda', -420116);
+  const otherIncome = getVal('other-income', 19361);
+  const otherExpenses = getVal('other-expenses', -1605);
+  const otherNet = otherIncome + (otherExpenses < 0 ? otherExpenses : -otherExpenses); // +17756
+  const netIncome = getVal('net-income', -402360);
 
-  // Build the sequential waterfall steps strictly respecting financial arithmetic
+  // Build the sequential waterfall steps
   const steps: WaterfallStep[] = [
     {
       id: 'net-revenue',
@@ -58,9 +58,9 @@ export const PLWaterfallChart: React.FC<PLWaterfallChartProps> = ({ rows }) => {
     {
       id: 'cogs',
       name: 'COGS',
-      value: -cogsVal,
+      value: cogs,
       startValue: netRevenue,
-      endValue: netRevenue - cogsVal, // 521861
+      endValue: netRevenue + cogs, // 402293
       isTotal: false,
       type: 'expense',
       color: '#C84B31',
@@ -70,17 +70,17 @@ export const PLWaterfallChart: React.FC<PLWaterfallChartProps> = ({ rows }) => {
       name: 'GM1',
       value: gm1,
       startValue: 0,
-      endValue: gm1, // 521861
+      endValue: gm1,
       isTotal: true,
       type: 'subtotal',
-      color: '#3D3833',
+      color: '#5A5A40',
     },
     {
       id: 'last-mile',
       name: 'Last Mile',
-      value: -lastMileVal,
+      value: lastMile,
       startValue: gm1,
-      endValue: gm1 - lastMileVal, // 451255
+      endValue: gm1 + lastMile, // 276611
       isTotal: false,
       type: 'expense',
       color: '#C84B31',
@@ -88,9 +88,9 @@ export const PLWaterfallChart: React.FC<PLWaterfallChartProps> = ({ rows }) => {
     {
       id: 'platform-fees',
       name: 'Platform Fees',
-      value: -platformFeesVal,
-      startValue: gm1 - lastMileVal,
-      endValue: gm2, // 413633
+      value: platformFees,
+      startValue: gm1 + lastMile,
+      endValue: gm1 + lastMile + platformFees, // 244449
       isTotal: false,
       type: 'expense',
       color: '#C84B31',
@@ -100,7 +100,7 @@ export const PLWaterfallChart: React.FC<PLWaterfallChartProps> = ({ rows }) => {
       name: 'GM2',
       value: gm2,
       startValue: 0,
-      endValue: gm2, // 413633
+      endValue: gm2,
       isTotal: true,
       type: 'subtotal',
       color: '#3D3833',
@@ -108,9 +108,9 @@ export const PLWaterfallChart: React.FC<PLWaterfallChartProps> = ({ rows }) => {
     {
       id: 'advertising',
       name: 'Ad Spend',
-      value: -advertisingVal,
+      value: advertising,
       startValue: gm2,
-      endValue: gm3, // -46974
+      endValue: gm2 + advertising, // -112076
       isTotal: false,
       type: 'expense',
       color: '#C84B31',
@@ -119,18 +119,18 @@ export const PLWaterfallChart: React.FC<PLWaterfallChartProps> = ({ rows }) => {
       id: 'gm3',
       name: 'GM3',
       value: gm3,
-      startValue: 0,
-      endValue: gm3, // -46974
+      startValue: gm3,
+      endValue: 0,
       isTotal: true,
       type: 'subtotal',
-      color: '#3D3833',
+      color: '#7A736A',
     },
     {
       id: 'opex',
       name: 'OPEX',
-      value: -opexVal,
+      value: opex,
       startValue: gm3,
-      endValue: ebitda, // -330847
+      endValue: gm3 + opex, // -420116
       isTotal: false,
       type: 'expense',
       color: '#C84B31',
@@ -139,8 +139,8 @@ export const PLWaterfallChart: React.FC<PLWaterfallChartProps> = ({ rows }) => {
       id: 'ebitda',
       name: 'EBITDA',
       value: ebitda,
-      startValue: 0,
-      endValue: ebitda, // -330847
+      startValue: ebitda,
+      endValue: 0,
       isTotal: true,
       type: 'subtotal',
       color: '#3D3833',
@@ -150,46 +150,41 @@ export const PLWaterfallChart: React.FC<PLWaterfallChartProps> = ({ rows }) => {
       name: 'Otros Neto',
       value: otherNet,
       startValue: ebitda,
-      endValue: netIncome, // -313258
+      endValue: ebitda + otherNet, // -402360
       isTotal: false,
       type: 'income',
-      color: '#15803D',
+      color: '#2E7D32',
     },
     {
       id: 'net-income',
       name: 'Net Income',
       value: netIncome,
-      startValue: 0,
-      endValue: netIncome, // -313258
+      startValue: netIncome,
+      endValue: 0,
       isTotal: true,
       type: 'subtotal',
-      color: '#3D3833',
+      color: '#1E293B',
     },
   ];
 
-  // Calculate Y domain range for unified coordinate scaling
-  const minY = -450000;
-  const maxY = 650000;
+  // Calculate Y domain range for SVG scaling
+  const minY = -480000;
+  const maxY = 500000;
   const totalRange = maxY - minY;
 
-  // Helper to map monetary value to percentage height/y-position within plot box
+  // Helper to map monetary value to percentage height/y-position
   const getYPct = (val: number) => {
     return ((maxY - val) / totalRange) * 100;
   };
 
-  const formatShortK = (num: number, type: 'subtotal' | 'expense' | 'income') => {
+  const formatShortK = (num: number) => {
+    const sign = num > 0 ? '' : '';
     const formatted = Math.abs(num) / 1000;
     if (num < 0) {
       return `-$${formatted.toFixed(1)}k`;
     }
-    if (type === 'income') {
-      return `+$${formatted.toFixed(1)}k`;
-    }
     return `$${formatted.toFixed(1)}k`;
   };
-
-  // Grid values every 200k, centered on $0
-  const gridValues = [600000, 400000, 200000, 0, -200000, -400000];
 
   return (
     <div className="bg-white rounded-xl border border-[#E8E2D9] p-6 shadow-xs">
@@ -202,7 +197,7 @@ export const PLWaterfallChart: React.FC<PLWaterfallChartProps> = ({ rows }) => {
           <div>
             <h3 className="text-base font-bold text-[#3D3833]">Cascada de Resultados P&L (Waterfall)</h3>
             <p className="text-xs text-[#7A736A]">
-              Flujo desde Net Revenue hasta Net Income con deducciones y subtotales alineados al eje $0 (USD)
+              Flujo desde Net Revenue hasta Net Income con deducciones y subtotales intermedios (USD)
             </p>
           </div>
         </div>
@@ -218,143 +213,101 @@ export const PLWaterfallChart: React.FC<PLWaterfallChartProps> = ({ rows }) => {
             <span className="text-[#5A5A40] font-medium">Costos / Egresos</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="w-3 h-3 rounded-xs bg-[#15803D] inline-block" />
+            <span className="w-3 h-3 rounded-xs bg-[#2E7D32] inline-block" />
             <span className="text-[#5A5A40] font-medium">Otros Ingresos</span>
           </div>
         </div>
       </div>
 
-      {/* Main Waterfall Graphic Area with Horizontal Scroll for narrow screens */}
-      <div className="overflow-x-auto">
-        <div className="min-w-[760px] relative w-full h-[370px] select-none">
-          {/* Exact Unified Plot Box: ALL Y-coordinates (grid lines, $0 baseline, bars, connectors) share this box */}
-          <div className="absolute left-16 right-12 top-5 bottom-12">
-            {/* Grid lines and Left Y-Axis labels */}
-            {gridValues.map((gridVal) => {
-              const isZero = gridVal === 0;
-              const yPct = getYPct(gridVal);
+      {/* Main Waterfall Graphic Canvas */}
+      <div className="relative w-full h-[340px] pt-4 pb-8 select-none">
+        {/* Zero baseline */}
+        <div
+          className="absolute left-0 right-0 border-b border-dashed border-[#A8A298] z-0"
+          style={{ top: `${getYPct(0)}%` }}
+        >
+          <span className="absolute right-0 -top-3 text-[10px] font-bold text-[#7A736A] bg-white px-1">
+            $0
+          </span>
+        </div>
 
-              return (
+        {/* Horizontal grid lines */}
+        {[-300000, -100000, 200000, 400000].map((gridVal) => (
+          <div
+            key={gridVal}
+            className="absolute left-0 right-0 border-b border-[#F0EDE8] z-0"
+            style={{ top: `${getYPct(gridVal)}%` }}
+          >
+            <span className="absolute left-0 -top-2.5 text-[9px] text-[#A8A298]">
+              ${gridVal / 1000}k
+            </span>
+          </div>
+        ))}
+
+        {/* Bars Container */}
+        <div className="relative w-full h-full flex items-stretch justify-between px-6 z-10">
+          {steps.map((step, idx) => {
+            const topVal = Math.max(step.startValue, step.endValue);
+            const bottomVal = Math.min(step.startValue, step.endValue);
+
+            const topPct = getYPct(topVal);
+            const bottomPct = getYPct(bottomVal);
+            const heightPct = Math.max(bottomPct - topPct, 1.2); // minimum height for visual touch
+
+            const isHovered = hoveredStep?.id === step.id;
+
+            return (
+              <div
+                key={step.id}
+                className="relative flex-1 flex flex-col items-center group cursor-pointer px-0.5"
+                onMouseEnter={() => setHoveredStep(step)}
+                onMouseLeave={() => setHoveredStep(null)}
+              >
+                {/* Connecting step line to next bar */}
+                {idx < steps.length - 1 && (
+                  <div
+                    className="absolute right-0 w-full border-b border-dotted border-[#B8B0A2] z-0 opacity-40 group-hover:opacity-100 transition-opacity"
+                    style={{ top: `${getYPct(step.endValue)}%` }}
+                  />
+                )}
+
+                {/* Floating Value Label on top or bottom of bar */}
                 <div
-                  key={gridVal}
-                  className={`absolute left-0 right-0 pointer-events-none ${
-                    isZero
-                      ? 'border-b-2 border-[#292524] z-10'
-                      : 'border-b border-[#E7E5E4] border-dashed z-0'
-                  }`}
-                  style={{ top: `${yPct}%` }}
+                  className="absolute z-20 whitespace-nowrap text-[10px] font-bold transition-transform group-hover:scale-110"
+                  style={{
+                    top: step.value >= 0 ? `${topPct - 6}%` : `${bottomPct + 1}%`,
+                    color: step.isTotal ? '#3D3833' : step.type === 'expense' ? '#C84B31' : '#2E7D32',
+                  }}
                 >
-                  {/* Left Y-axis label */}
+                  {formatShortK(step.value)}
+                </div>
+
+                {/* Actual Bar Element */}
+                <div
+                  className={`w-full max-w-[36px] rounded-xs transition-all duration-200 z-10 ${
+                    isHovered ? 'ring-2 ring-offset-1 ring-[#3D3833] brightness-110' : ''
+                  }`}
+                  style={{
+                    position: 'absolute',
+                    top: `${topPct}%`,
+                    height: `${heightPct}%`,
+                    backgroundColor: step.color,
+                  }}
+                />
+
+                {/* X-Axis Category Label */}
+                <div className="absolute bottom-[-32px] text-center w-full">
                   <span
-                    className={`absolute right-full mr-3 -translate-y-1/2 text-right font-mono text-[10px] whitespace-nowrap ${
-                      isZero ? 'font-bold text-[#1C1917]' : 'text-[#78716C]'
-                    }`}
+                    className={`block text-[10px] truncate leading-tight transition-colors ${
+                      step.isTotal ? 'font-bold text-[#3D3833]' : 'font-medium text-[#7A736A]'
+                    } ${isHovered ? 'text-[#3D3833] underline' : ''}`}
                   >
-                    {isZero ? '$0' : `${gridVal > 0 ? '$' : '-$'}${Math.abs(gridVal) / 1000}k`}
+                    {step.name}
                   </span>
                 </div>
-              );
-            })}
-
-            {/* Bars and Steps Container: shares exact inset-0 of the plot box */}
-            <div className="absolute inset-0 flex items-stretch justify-between z-20">
-              {steps.map((step, idx) => {
-                const topVal = Math.max(step.startValue, step.endValue);
-                const bottomVal = Math.min(step.startValue, step.endValue);
-
-                const topPct = getYPct(topVal);
-                const bottomPct = getYPct(bottomVal);
-                // Minimum visual bar height of 3px
-                const heightPct = Math.max(bottomPct - topPct, 0.8);
-
-                const isHovered = hoveredStep?.id === step.id;
-
-                // Value label placement
-                // Negative subtotals (GM3, EBITDA, Net Income): placed below their bar bottom
-                // Positive subtotals & all deductions/incomes: placed above their bar top
-                const isNegativeSubtotal = step.isTotal && step.value < 0;
-                const labelIsAbove = !isNegativeSubtotal;
-
-                // Determine border radius logic
-                let roundedClass = 'rounded-xs';
-                if (step.isTotal) {
-                  roundedClass = step.value >= 0 ? 'rounded-t-xs' : 'rounded-b-xs';
-                }
-
-                return (
-                  <div
-                    key={step.id}
-                    className="relative flex-1 flex flex-col items-center group cursor-pointer px-1"
-                    onMouseEnter={() => setHoveredStep(step)}
-                    onMouseLeave={() => setHoveredStep(null)}
-                  >
-                    {/* Connecting step line to next bar (at transition endValue) */}
-                    {idx < steps.length - 1 && (
-                      <div
-                        className="absolute left-1/2 w-full border-b border-dashed border-[#A8A29E]/70 z-0 pointer-events-none group-hover:border-[#3D3833] transition-colors"
-                        style={{ top: `${getYPct(step.endValue)}%` }}
-                      />
-                    )}
-
-                    {/* Floating Value Label */}
-                    <div
-                      className="absolute z-30 whitespace-nowrap text-[10px] font-bold transition-transform group-hover:scale-110 pointer-events-none"
-                      style={
-                        labelIsAbove
-                          ? {
-                              top: `${topPct}%`,
-                              transform: 'translateY(-100%) translateY(-5px)',
-                              color: step.isTotal
-                                ? '#1C1917'
-                                : step.type === 'expense'
-                                ? '#C84B31'
-                                : '#15803D',
-                            }
-                          : {
-                              top: `${bottomPct}%`,
-                              transform: 'translateY(5px)',
-                              color: step.isTotal
-                                ? '#1C1917'
-                                : step.type === 'expense'
-                                ? '#C84B31'
-                                : '#15803D',
-                            }
-                      }
-                    >
-                      {formatShortK(step.value, step.type)}
-                    </div>
-
-                    {/* Actual Bar Element */}
-                    <div
-                      className={`w-full max-w-[34px] ${roundedClass} transition-all duration-150 z-20 ${
-                        isHovered
-                          ? 'ring-2 ring-offset-1 ring-[#1C1917] brightness-110 shadow-md'
-                          : 'shadow-xs'
-                      }`}
-                      style={{
-                        position: 'absolute',
-                        top: `${topPct}%`,
-                        height: `${heightPct}%`,
-                        backgroundColor: step.color,
-                      }}
-                    />
-
-                    {/* X-Axis Category Label below the plot box */}
-                    <div className="absolute top-[100%] pt-2.5 text-center w-full">
-                      <span
-                        className={`block text-[10px] truncate leading-tight transition-colors ${
-                          step.isTotal ? 'font-bold text-[#1C1917]' : 'font-medium text-[#78716C]'
-                        } ${isHovered ? 'text-[#1C1917] underline font-semibold' : ''}`}
-                        title={step.name}
-                      >
-                        {step.name}
-                      </span>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -379,9 +332,7 @@ export const PLWaterfallChart: React.FC<PLWaterfallChartProps> = ({ rows }) => {
               <span className="text-[#7A736A]">
                 % s/ Revenue:{' '}
                 <strong className="text-[#5A5A40]">
-                  {hoveredStep.isTotal
-                    ? `${((hoveredStep.value / netRevenue) * 100).toFixed(1)}%`
-                    : `${((Math.abs(hoveredStep.value) / netRevenue) * 100).toFixed(1)}%`}
+                  {((hoveredStep.value / netRevenue) * 100).toFixed(1)}%
                 </strong>
               </span>
             </div>

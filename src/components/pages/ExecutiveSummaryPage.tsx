@@ -22,17 +22,10 @@ export const ExecutiveSummaryPage: React.FC<ExecutiveSummaryPageProps> = ({ shee
   const netIncRow = parsedData.rows.find((r) => r.id === 'net-income');
 
   const scorecards = EXECUTIVE_SCORECARDS.map((card) => {
-    const matched = parsedData.matchedRows?.[card.id];
-    const sheetRow = matched?.rowNumber;
-    const columnLetter = 'L';
-
     if (card.id === 'net-revenue' && netRevRow) {
       return {
         ...card,
         value: netRevRow.real,
-        sheetRow,
-        columnLetter,
-        momChange: parsedData.momChanges?.netRevenue ?? card.momChange,
         bpVariance: netRevRow.real - netRevRow.bp,
         scVariance: netRevRow.real - netRevRow.sc,
       };
@@ -41,9 +34,6 @@ export const ExecutiveSummaryPage: React.FC<ExecutiveSummaryPageProps> = ({ shee
       return {
         ...card,
         value: gm1Row.real,
-        sheetRow,
-        columnLetter,
-        momChange: parsedData.momChanges?.gm1 ?? card.momChange,
         secondaryValue: `${Math.round((gm1Row.real / netRevRow.real) * 100)}%`,
       };
     }
@@ -51,9 +41,6 @@ export const ExecutiveSummaryPage: React.FC<ExecutiveSummaryPageProps> = ({ shee
       return {
         ...card,
         value: gm2Row.real,
-        sheetRow,
-        columnLetter,
-        momChange: parsedData.momChanges?.gm2 ?? card.momChange,
         secondaryValue: `${Math.round((gm2Row.real / netRevRow.real) * 100)}%`,
       };
     }
@@ -61,35 +48,26 @@ export const ExecutiveSummaryPage: React.FC<ExecutiveSummaryPageProps> = ({ shee
       return {
         ...card,
         value: gm3Row.real,
-        sheetRow,
-        columnLetter,
-        momChange: parsedData.momChanges?.gm3 ?? card.momChange,
         secondaryValue: `${Math.round((gm3Row.real / netRevRow.real) * 100)}%`,
       };
     }
     if (card.id === 'advertising' && advRow && netRevRow) {
+      const pctThisMonth = `${Math.abs(Math.round((advRow.real / netRevRow.real) * 100))}%`;
       return {
         ...card,
-        label: 'Gasto de Ads',
         value: advRow.real,
-        sheetRow,
-        columnLetter,
-        momChange: parsedData.momChanges?.advertising ?? card.momChange,
-        pctRevenueThisMonth: parsedData.advertisingStats?.pctThisMonth ?? `${Math.abs(Math.round((advRow.real / netRevRow.real) * 100))}%`,
-        pctRevenueLastMonth: parsedData.advertisingStats?.pctLastMonth ?? '80%',
-        pctRevenueAvgAnnual: parsedData.advertisingStats?.pctAvgAnnual ?? '75%',
+        pctRevenueThisMonth: pctThisMonth,
+        pctRevenueLastMonth: card.pctRevenueLastMonth || '74%',
+        pctRevenueAvgAnnual: card.pctRevenueAvgAnnual || '68%',
       };
     }
     if (card.id === 'net-income' && netIncRow) {
       return {
         ...card,
         value: netIncRow.real,
-        sheetRow,
-        columnLetter,
-        momChange: parsedData.momChanges?.netIncome ?? card.momChange,
       };
     }
-    return { ...card, sheetRow, columnLetter };
+    return card;
   });
 
   return (
@@ -97,23 +75,21 @@ export const ExecutiveSummaryPage: React.FC<ExecutiveSummaryPageProps> = ({ shee
       {/* Page Header Intro */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-xl border border-[#E8E2D9] shadow-xs">
         <div>
-          <div className="flex flex-wrap items-center gap-2 mb-1">
-            <h2 className="text-xl font-bold text-[#3D3833]">Resumen Ejecutivo Financiero</h2>
-          </div>
-          <p className="text-xs text-[#7A736A]">
-            Métricas extraídas del P&L de agosto con comparativas directas contra mes anterior
+          <h2 className="text-xl font-bold text-[#3D3833]">Resumen Ejecutivo Financiero</h2>
+          <p className="text-xs text-[#7A736A] mt-1">
+            Métricas principales de rendimiento del mes corriente, comparación contra Budget Plan (BP) y Same Scenario (SC).
           </p>
         </div>
         <div className="flex items-center gap-2">
           {parsedData.isLive ? (
             <div className="flex items-center gap-1.5 bg-[#E2F0D9] text-[#2E7D32] px-3 py-1.5 rounded-lg border border-[#C8E6C9] text-xs font-semibold">
               <CheckCircle2 className="w-4 h-4 text-[#2E7D32]" />
-              <span>Tab PL Conectada (Col. L &bull; {parsedData.rawRowsCount} filas)</span>
+              <span>Google Sheet En Vivo ({parsedData.rawRowsCount} filas)</span>
             </div>
           ) : (
             <div className="flex items-center gap-2 bg-[#F5F2ED] px-3 py-1.5 rounded-lg border border-[#E8E2D9] text-xs text-[#5A5A40] font-semibold">
               <ShieldCheck className="w-4 h-4 text-[#8C9C8C]" />
-              <span>Mes Evaluado: {parsedData.evaluatedMonth || 'Agosto 2026 (Cerrado)'}</span>
+              <span>Mes Evaluado: Hoja PL</span>
             </div>
           )}
         </div>
@@ -122,9 +98,7 @@ export const ExecutiveSummaryPage: React.FC<ExecutiveSummaryPageProps> = ({ shee
       {/* Scorecards Grid (6 Scorecards in 1 Row) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
         {scorecards.map((card) => {
-          // For advertising expense, spending more than last month is unfavorable (red)
-          const isExpense = card.id === 'advertising';
-          const isFavorableMoM = isExpense ? (card.momChange || 0) <= 0 : (card.momChange || 0) >= 0;
+          const isPositiveMoM = (card.momChange || 0) >= 0;
 
           return (
             <div
@@ -132,19 +106,9 @@ export const ExecutiveSummaryPage: React.FC<ExecutiveSummaryPageProps> = ({ shee
               className="bg-white rounded-xl p-4 border border-[#E8E2D9] shadow-xs hover:shadow-sm transition-all flex flex-col justify-between"
             >
               <div>
-                <div className="flex items-center justify-between gap-1 mb-1.5">
-                  <span className="text-[11px] font-semibold text-[#7A736A] uppercase tracking-wider block truncate">
-                    {card.label}
-                  </span>
-                  {card.sheetRow && (
-                    <span
-                      title={`Fila ${card.sheetRow} &bull; Columna L`}
-                      className="text-[9px] font-mono font-medium px-1.5 py-0.5 rounded bg-[#F5F2ED] text-[#7A736A] border border-[#E8E2D9] shrink-0"
-                    >
-                      Fila {card.sheetRow}
-                    </span>
-                  )}
-                </div>
+                <span className="text-[11px] font-semibold text-[#7A736A] uppercase tracking-wider block mb-1.5 truncate">
+                  {card.label}
+                </span>
 
                 <div className="text-xl sm:text-2xl font-bold text-[#3D3833] tracking-tight">
                   {card.isCurrency ? formatCurrency(card.value) : card.value}
@@ -155,10 +119,10 @@ export const ExecutiveSummaryPage: React.FC<ExecutiveSummaryPageProps> = ({ shee
                 {/* MoM Change badge */}
                 {card.momChange !== undefined && (
                   <div className="flex items-center justify-between text-[11px]">
-                    <span className="text-[#A8A298]">vs Julio</span>
+                    <span className="text-[#A8A298]">vs Mes Anterior</span>
                     <span
                       className={`inline-flex items-center gap-0.5 font-bold ${
-                        isFavorableMoM ? 'text-[#22C55E]' : 'text-[#EF4444]'
+                        isPositiveMoM ? 'text-[#22C55E]' : 'text-[#EF4444]'
                       }`}
                     >
                       {formatPercent(card.momChange)}

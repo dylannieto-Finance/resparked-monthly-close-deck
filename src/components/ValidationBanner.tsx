@@ -34,16 +34,16 @@ export const ValidationBanner: React.FC<ValidationBannerProps> = ({ validation }
             <div className="flex items-center gap-2">
               <h4 className="font-bold text-sm">
                 {passed
-                  ? '✅ Test de Validación de Datos (Agosto 2026): APROBADO'
-                  : '❌ ERROR DE VALIDACIÓN: Los datos no coinciden con la especificación de Agosto 2026'}
+                  ? '✅ Test de Validación de Datos (Julio 2026): APROBADO'
+                  : '❌ ERROR VISIBLE DE VALIDACIÓN: Los datos no coinciden con la especificación de Julio 2026'}
               </h4>
               <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-white/60 font-semibold">
-                {passed ? 'Métricas Matemáticamente Consistentes' : `${errors.length} Discrepancias Detectadas`}
+                {passed ? '13/13 Métricas Correctas' : `${errors.length} Discrepancias Detectadas`}
               </span>
             </div>
             <p className="text-xs opacity-90 mt-0.5">
               {passed
-                ? 'Lectura verificada con consistencia matemática y de balance para el mes de Agosto 2026 cerrado.'
+                ? 'Lectura verificada contra los valores estándar de P&L para Julio 2026 (Net Revenue $446.660, GM2 $244.449, EBITDA -$420.116, Net Income -$402.360).'
                 : 'Se encontraron valores fuera del margen esperado en la lectura del Google Sheet o la fórmula.'}
             </p>
           </div>

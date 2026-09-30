@@ -1,15 +1,12 @@
 export type PageView =
   | 'executive'
   | 'pl-real-vs-bp'
-  | 'pl-us-vs-international'
   | 'opex-real-vs-bp'
   | 'opex-trends'
   | 'opex-suppliers'
   | 'balance-sheet'
   | 'gm2-summary'
   | 'gm2-heatmap'
-  | 'q4-discounts'
-  | 'profitability-drivers'
   | 'cash-flow';
 
 export type BudgetStatus = 'on_track' | 'near_limit' | 'over_budget';
@@ -29,8 +26,6 @@ export interface ScorecardMetric {
   pctRevenueThisMonth?: string;
   pctRevenueLastMonth?: string;
   pctRevenueAvgAnnual?: string;
-  sheetRow?: number;
-  columnLetter?: string;
 }
 
 export interface PLRow {
@@ -41,7 +36,7 @@ export interface PLRow {
   isHeader?: boolean;
   real: number;
   bp: number;
-  sc?: number;
+  sc: number;
   pctOfRevenueReal?: number;
   pctOfRevenueBP?: number;
   pctOfRevenueSC?: number;
